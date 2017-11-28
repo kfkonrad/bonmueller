@@ -1,0 +1,123 @@
+%% bonmueller.sty
+%% Copyright 2017 Kevin Konrad
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+%
+% The Current Maintainer of this work is Kevin Konrad
+%
+% This work consists of the file bonmueller.sty
+
+%%%% DOCUMENTATION
+% To use this package include the line \usepackage{bonmueller} somewhere
+% in your preamble ~~AFTER~~ loading the biblatex package with
+% \usepackage[style=authoryear-icomp]{biblatex} and additional options as deemed
+% necessary.
+%
+% For users of hsklbook class: You needn't include biblatex, hsklbook does that
+% for you.
+
+%%%% CHANGELOG
+%% Version 1.0
+% replaced parentheses with brackets for all citing commands
+%
+% added the citation key of the text as a first line (printed bold)
+% in every entry of the bibliography.
+%
+% removed the yearextra from the bibentry. With this custom style the yearextra
+% (e.g. the a in Doe 2017a) is already included in the first line of the
+% entry and thus needn't be mentioned again in the rest of the entry. This
+% avoids outputs like
+%   Doe 2017a
+%     Doe, Jon (2017a). On the utterly uninteresting.
+% and instead produces:
+%   Doe 2017a
+%     Doe, Jon (2017). On the utterly uninteresting.
+
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\def\bon@muelsty@version{1.0}
+\ProvidesPackage{bonmueller}%
+  [2017/07/14 bonmueller v\bon@muelsty@version]
+
+\def\bon@muelsty@bibrequiredversion{2.9}
+\def\bon@muelsty@bibrequireddate{2014-02-25}
+\newcommand\bon@muelsty@error[2]{\PackageError{bonmueller}{#1}{#2}}
+
+\typeout{%
+  This is bonmueller.sty Version \bon@muelsty@version. biblatex Version
+  \bon@muelsty@bibrequiredversion ^^Jfrom \bon@muelsty@bibrequireddate\space%
+  or higher is required.%
+}
+
+\ProcessOptions\relax
+
+\@ifpackageloaded{biblatex}{}{
+  \bon@muelsty@error
+  {Package biblatex with style authoryear or a ^^J%
+    derived style like authoryear-comp must be loaded%
+  }
+  {Use biblatex package with option [style=authoryear-icomp] before ^^J%
+  loading this package.%
+  }
+}
+
+
+\ExecuteBibliographyOptions%
+{%
+  isbn=true,
+  pagetracker=true,
+  maxbibnames=50,
+  maxcitenames=2,
+  autocite=inline,
+  block=space,
+  backref=true,
+  backrefstyle=three+,
+  date=short,
+  url=true,
+  dashed=false
+}
+
+\DeclareCiteCommand{\parencite}[\mkbibbrackets]
+  {\usebibmacro{cite:init}%
+   \usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {}
+  {\usebibmacro{cite:postnote}}
+
+\DeclareCiteCommand*{\parencite}[\mkbibbrackets]
+  {\usebibmacro{cite:init}%
+   \usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{citeyear}}
+  {}
+  {\usebibmacro{cite:postnote}}
+
+\DeclareCiteCommand{\smartcite}[\iffootnote\mkbibbrackets\mkbibfootnote]
+  {\usebibmacro{cite:init}%
+   \usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {}
+  {\usebibmacro{cite:postnote}}
+
+\DeclareMultiCiteCommand{\parencites}[\mkbibbrackets]
+  {\parencite}{\setunit{\multicitedelim}}
+
+\DeclareMultiCiteCommand{\smartcites}[\iffootnote\mkbibbrackets\mkbibfootnote]
+  {\smartcite}{\setunit{\multicitedelim}}
+
+\renewbibmacro{begentry}
+{%
+  \textbf{\printnames[][-\value{liststop}]{labelname}~%
+  \printfield{labelyear}\printfield{extrayear}}\clearfield{extrayear}\\%
+}
+
+\endinput
